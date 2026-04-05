@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 HO TRO FF - HỆ THỐNG KÉO TÂM ĐA NỀN TẢNG 🔥</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --fire: #ff4d00;
+    --fire-glow: #ffae00;
+    --bg: #050505;
+    --card: rgba(15, 15, 15, 0.9);
+    --gold: #ffd700;
+    --cyan: #00f2ff;
+}
+
+body {
+    background: var(--bg); color: white; font-family: 'Oswald', sans-serif;
+    margin: 0; padding-bottom: 50px; overflow-x: hidden; user-select: none;
+}
+
+/* Nền hạt đốm lửa */
+#bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+
+header {
+    background: linear-gradient(to bottom, rgba(80, 0, 0, 0.6), transparent);
+    padding: 60px 10px; text-align: center; border-bottom: 3px solid var(--fire);
+    position: relative; overflow: hidden;
+}
+
+/* Hiệu ứng quét Radar Cyber */
+header::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--fire), transparent);
+    animation: scan 4s linear infinite;
+}
+@keyframes scan { 0% { top: 0; left: -100%; } 100% { top: 100%; left: 100%; } }
+
+header h1 { 
+    font-family: 'Orbitron', sans-serif; font-size: 3.5em; margin: 0; 
+    color: #fff; text-shadow: 0 0 15px var(--fire), 0 0 30px var(--fire);
+    animation: neonPulse 2s infinite alternate;
+}
+@keyframes neonPulse { from { opacity: 0.8; } to { opacity: 1; text-shadow: 0 0 20px var(--fire), 0 0 40px var(--fire-glow); } }
+
+header p { color: #ccc; font-size: 14px; margin-top: 10px; letter-spacing: 2px; }
+
+.container { max-width: 850px; margin: auto; padding: 15px; position: relative; z-index: 1;}
+
+/* Hiệu ứng Glassmorphism cho Box */
+.box {
+    background: var(--card); backdrop-filter: blur(15px); border-radius: 20px; 
+    padding: 25px; margin-bottom: 25px; border: 1px solid rgba(255, 77, 0, 0.2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8); transition: 0.4s;
+    position: relative; overflow: hidden;
+}
+.box:hover { border-color: var(--fire); transform: translateY(-5px); box-shadow: 0 0 20px rgba(255, 77, 0, 0.3); }
+
+/* Hiệu ứng tia sáng lướt qua Box */
+.box::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: 0.6s;
+}
+.box:hover::before { left: 150%; }
+
+h2 { color: var(--fire); font-family: 'Orbitron', sans-serif; font-size: 1.1em; display: flex; align-items: center; gap: 10px; margin-top: 0; }
+h2::before { content: ''; width: 5px; height: 18px; background: var(--fire); display: inline-block; box-shadow: 0 0 10px var(--fire); }
+
+.ads-banner {
+    width: 100%; min-height: 90px; background: linear-gradient(45deg, #1a1a1a, #000);
+    margin: 20px 0; border-radius: 15px; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; text-decoration: none; 
+    color: white; font-weight: 900; border: 2px dashed rgba(255,255,255,0.2); cursor: pointer; text-align: center;
+    transition: 0.3s;
+}
+.ads-banner:hover { border-color: var(--cyan); box-shadow: 0 0 15px var(--cyan); }
+
+/* Sensitivity Cards */
+.sens-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+.sens-card { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #222; transition: 0.3s; }
+.sens-card:hover { background: rgba(255,77,0,0.1); border-color: var(--fire); }
+.sens-card b { color: var(--gold); font-size: 1.8em; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+
+/* Training Area */
+#trainingField {
+    width: 100%; height: 450px; background: url('https://wallpapercave.com/wp/wp8553259.jpg') center/cover;
+    position: relative; border-radius: 20px; border: 2px solid #333; overflow: hidden;
+    transition: 0.1s; /* Dùng cho hiệu ứng rung màn hình */
+}
+#crosshair { width: 40px; height: 40px; position: absolute; pointer-events: none; transform: translate(-50%, -50%); z-index: 100; }
+.ch-circle { width: 34px; height: 34px; border: 2px solid #fff; border-radius: 50%; position: absolute; left: 3px; top: 3px; }
+.ch-dot { width: 4px; height: 4px; background: red; border-radius: 50%; position: absolute; left: 18px; top: 18px; box-shadow: 0 0 8px red; }
+
+.bot-target { width: 80px; height: 180px; position: absolute; pointer-events: none; }
+.bot-head { width: 28px; height: 28px; background: radial-gradient(#ff4d4d, #222); border-radius: 50%; margin: 0 auto; border: 2px solid #444; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
+.bot-body { width: 50px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 8px; margin: 3px auto; border: 1px solid rgba(255,255,255,0.2); }
+
+#fireBtn { width: 90px; height: 90px; background: rgba(255,255,255,0.1); border: 4px solid rgba(255,255,255,0.3); border-radius: 50%; position: absolute; bottom: 20px; right: 20px; z-index: 1000; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; }
+#fireBtn:active { transform: scale(0.8); border-color: var(--fire); box-shadow: 0 0 20px var(--fire); }
+
+/* Hiệu ứng Rung màn hình */
+.shake { animation: shakeAnim 0.1s linear 3; }
+@keyframes shakeAnim { 0% { transform: translate(2px, 2px); } 50% { transform: translate(-2px, -2px); } 100% { transform: translate(0, 0); } }
+
+/* VIP Details Section */
+.vip-card-detail { background: #000; border: 1px solid var(--gold); border-radius: 15px; padding: 20px; display: none; text-align: left; box-shadow: 0 0 30px rgba(255,215,0,0.2); }
+.step-box { background: #0a0a0a; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--fire); position: relative; }
+.step-box b { color: var(--gold); display: block; margin-bottom: 8px; font-size: 16px; font-family: Orbitron; }
+.param-vip { color: #00ff00; font-weight: bold; text-shadow: 0 0 5px #00ff00; }
+
+.btn-fire { 
+    background: linear-gradient(90deg, #ff4d00, #ffae00); color: white; border: none; 
+    padding: 16px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; 
+    font-family: 'Orbitron', sans-serif; text-transform: uppercase; width: 100%;
+    position: relative; overflow: hidden;
+}
+.btn-fire::after {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: rgba(255,255,255,0.1); transform: rotate(45deg); transition: 0.5s;
+}
+.btn-fire:hover::after { left: 100%; }
+
+.footer-banner { background: rgba(10, 10, 10, 0.98); border: 1px solid rgba(255, 77, 0, 0.3); border-radius: 20px; padding: 30px; margin-top: 40px; text-align: center; }
+
+#killFeed { position: absolute; top: 15px; right: 15px; text-align: right; pointer-events: none; }
+.kill-item { color: white; background: rgba(255,0,0,0.9); padding: 6px 15px; margin-bottom: 5px; font-weight: 900; border-radius: 4px; animation: killAnim 1.5s forwards; font-size: 14px; border-left: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+@keyframes killAnim { 0% { opacity: 0; transform: translateX(50px); } 10% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: scale(1.2); } }
+
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<header>
+    <h1>HO TRO FF</h1>
+    <p>( Hệ thống hỗ trợ kéo tâm dựa trên nhiều nền tảng )</p>
+</header>
+
+<div class="container">
+
+    <!-- QC 1 -->
+    <div class="ads-banner" onclick="handleAdClick('top', 'https://shopee.vn')">
+        <span style="color:var(--fire-glow); font-size: 1.3em; text-shadow: 0 0 10px var(--fire);">🎁 NHẬN KIM CƯƠNG MIỄN PHÍ TẠI ĐÂY</span>
+        <span style="font-size: 11px; opacity: 0.7;">(Click để kích hoạt AI Chẩn Đoán)</span>
+    </div>
+
+    <!-- CHỌN THIẾT BỊ -->
+    <div class="box">
+        <h2>📱 PHÂN TÍCH THIẾT BỊ</h2>
+        <select id="phoneSelect" onchange="updateAll()" style="width:100%; padding:15px; background:#111; color:white; border:1px solid var(--fire); border-radius:10px; font-family: 'Oswald'; cursor: pointer;">
+            <optgroup label="Apple (iPhone/iPad)">
+                <option value="ip68">iPhone 6 / 7 / 8 Plus</option>
+                <option value="ipX">iPhone X / XS / XR</option>
+                <option value="ip1113">iPhone 11 / 12 / 13 Series</option>
+                <option value="ip1416" selected>iPhone 14 / 15 / 16 Pro Max</option>
+                <option value="ipad">Dòng máy iPad (Tất cả)</option>
+            </optgroup>
+            <optgroup label="Samsung">
+                <option value="ssS24">Samsung S23 / S24 Ultra</option>
+                <option value="ssS21">Samsung S20 / S21 / S22</option>
+                <option value="ssA">Samsung Dòng A (A54, A73...)</option>
+            </optgroup>
+            <optgroup label="Xiaomi / Poco">
+                <option value="mi14">Xiaomi 13 / 14 Series</option>
+                <option value="poco">Poco F5 / F6 / X6 Pro</option>
+                <option value="redmi">Redmi Note 12 / 13 Series</option>
+            </optgroup>
+            <optgroup label="Gaming Phone">
+                <option value="rog">ROG Phone 7 / 8 Pro</option>
+                <option value="redmagic">Red Magic 8 / 9 Pro</option>
+            </optgroup>
+            <optgroup label="Hãng khác">
+                <option value="oppo">Oppo Reno / Find X Series</option>
+                <option value="realme">Realme GT / Q Series</option>
+                <option value="vivo">Vivo V / X Series</option>
+            </optgroup>
+        </select>
+        <div class="sens-grid" id="sensDisplay"></div>
+    </div>
+
+    <!-- TRAINING -->
+    <div class="box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2>🎯 TRAINING KÉO TÂM AI</h2>
+            <span style="color:var(--gold)">Score: <b id="score" style="font-size: 1.6em; text-shadow: 0 0 10px var(--gold);">0</b></span>
+        </div>
+        <div id="trainingField">
+            <div id="killFeed"></div>
+            <div id="timerBar" style="width: 100%; height: 5px; background: linear-gradient(to right, var(--fire), var(--fire-glow)); position: absolute; top: 0; z-index: 10;"></div>
+            <div id="crosshair"><div class="ch-circle"></div><div class="ch-dot"></div></div>
+            <div id="bot" class="bot-target"><div class="bot-head"></div><div class="bot-body"></div></div>
+            <div id="fireBtn">
+                <div style="width:50px; height:50px; border:3px solid rgba(255,255,255,0.5); border-radius:50%;"></div>
+            </div>
+            
+            <div id="startCover" style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; z-index:1000;">
+                <button class="btn-fire" style="width:auto; padding: 15px 50px;" onclick="startGame()">BẮT ĐẦU TRAINING (30S)</button>
+            </div>
+
+            <div id="aiReport" style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:2000; display:none; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                <h3 style="color:var(--fire); font-family:Orbitron; letter-spacing: 2px;">BÁO CÁO PHÂN TÍCH</h3>
+                <div style="background:#111; padding:25px; border-radius:20px; width:75%; border: 1px solid var(--fire);">
+                    <p style="font-size: 1.2em;">Tỷ lệ Headshot: <b id="ai-hs" style="color:red; font-size: 2.5em; text-shadow: 0 0 15px red;">0%</b></p>
+                </div>
+                <button class="btn-fire" style="width:auto; margin-top:25px;" onclick="restartGame()">THỬ LẠI</button>
+            </div>
+        </div>
+
+        <div class="review-box" style="background: rgba(255, 77, 0, 0.05); border-left: 5px solid var(--fire); padding: 15px; margin-top: 15px; border-radius: 10px;">
+            <h2 style="font-size: 14px; margin-bottom: 5px;">📝 NHẬN XÉT AI</h2>
+            <p id="ai-review-text" style="font-size:14px; color: #ddd; margin: 0;">Vui lòng hoàn thành bài tập để AI đưa ra nhận xét.</p>
+            <div id="ai-adjustment" style="display:none; margin-top:10px; font-size:14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                <b style="color:var(--fire-glow)">Đề xuất:</b> <span id="adj-text" style="color: #00ff00;">---</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX LAG -->
+    <div class="box">
+        <h2>⚡ TỐI ƯU HÓA HỆ THỐNG (FIX LAG)</h2>
+        <div class="lag-fix-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+            <div class="lag-item" style="background: #111; padding: 12px; border-radius: 10px; border: 1px solid #222;">Đồ họa: <b style="color:var(--cyan)">Mượt (Smooth)</b></div>
+            <div class="lag-item" style="background: #111; padding: 12px; border-radius: 10px; border: 1px solid #222;">FPS cao: <b style="color:var(--cyan)">Bật (High)</b></div>
+            <div class="lag-item" style="background: #111; padding: 12px; border-radius: 10px; border: 1px solid #222;">Tự động nhặt: <b style="color:var(--cyan)">Tắt hết</b></div>
+            <div class="lag-item" style="background: #111; padding: 12px; border-radius: 10px; border: 1px solid #222;">Hiệu ứng: <b style="color:var(--cyan)">Không máu</b></div>
+        </div>
+        
+        <div class="ads-banner" style="background: linear-gradient(to right, #004e92, #000428); border-color: var(--cyan); margin-top:20px;" onclick="handleAdClick('mid', 'https://shopee.vn')">
+            <span style="color:var(--cyan)">🚀 GIẢM LAG & ỔN ĐỊNH FPS 99% OB44</span>
+            <span style="font-size: 11px; opacity: 0.8;">Click để nhận file Fix Lag độc quyền</span>
+        </div>
+    </div>
+
+    <!-- VIP SECTION -->
+    <div class="box" style="border-color: var(--gold); background: linear-gradient(145deg, #111, #000);">
+        <h2 style="color:var(--gold)">💎 THÔNG SỐ VIP & HƯỚNG DẪN CHI TIẾT</h2>
+        <div id="vip-lock">
+            <p style="color:#aaa; font-size: 14px;">Mở khóa DPI bí mật và các cài đặt Trợ năng ghim tâm cho từng dòng máy.</p>
+            <button class="btn-fire" onclick="showBank()">🔓 NẠP 5.000đ (MỞ NGAY)</button>
+            <p style="margin-top:10px; font-size:12px; color:#888;">HOẶC CLICK 2 QUẢNG CÁO ĐỂ MỞ MIỄN PHÍ</p>
+            <p id="ad-status" style="color:var(--fire); font-weight:bold;"></p>
+        </div>
+
+        <div id="vip-content" class="vip-card-detail">
+            <h3 id="vip-title-name" style="color:var(--gold); margin-top:0; font-family:Orbitron; border-bottom: 2px solid var(--gold); padding-bottom:10px;">CẤU HÌNH VIP:</h3>
+            
+            <div id="android-vip-box" style="display:none;">
+                <div class="step-box">
+                    <b>1. TÙY CHỌN NHÀ PHÁT TRIỂN</b>
+                    <p>- Độ rộng nhỏ nhất (DPI): <span id="vip-dpi-val" class="param-vip">580</span>.</p>
+                    <p>- Tỷ lệ hình động (3 mục): Chỉnh về <span class="param-vip">0.5x</span>.</p>
+                </div>
+                <div class="step-box">
+                    <b>2. TỐC ĐỘ CON TRỎ & CHẠM</b>
+                    <p>- Tốc độ con trỏ: <span class="param-vip">Tối đa (100%)</span>.</p>
+                    <p>- Độ trễ chạm và giữ: <span class="param-vip">Ngắn (0.5s)</span>.</p>
+                </div>
+                <div class="step-box">
+                    <b>3. TRỢ NĂNG (ACCESSIBILITY)</b>
+                    <p>- Click khi con trỏ dừng: <span class="param-vip">600ms</span>.</p>
+                </div>
+            </div>
+
+            <div id="ios-vip-box" style="display:none;">
+                <div class="step-box">
+                    <b>1. THÍCH NGHI CẢM ỨNG (TOUCH)</b>
+                    <p>- Thời gian giữ: <span class="param-vip">0.10 giây</span>.</p>
+                    <p>- Bỏ qua lặp lại: <span class="param-vip">0.10 giây</span>.</p>
+                </div>
+                <div class="step-box">
+                    <b>2. ĐIỀU KHIỂN CÔNG TẮC (SWITCH CONTROL)</b>
+                    <p>- Con trỏ trượt: <span class="param-vip">Chính xác</span>.</p>
+                    <p>- Tốc độ con trỏ: <span class="param-vip">120</span>.</p>
+                </div>
+                <div class="step-box">
+                    <b>3. ĐIỀU KHIỂN CON TRỎ (POINTER)</b>
+                    <p>- Tốc độ cuốn: Kéo lên <span class="param-vip">Max (100%)</span>.</p>
+                </div>
+            </div>
+            <p style="text-align:center; color:red; font-size:11px; font-weight:bold;">⚠️ QUAN TRỌNG: KHỞI ĐỘNG LẠI MÁY ĐỂ KÍCH HOẠT MACRO AI</p>
+        </div>
+
+        <div id="payArea" style="display:none; margin-top:20px;">
+            <div style="background:#fff; color:#000; padding:15px; border-radius:10px;">
+                <p>Số tài khoản: <b style="color:red;">61706200007</b> (TP BANK)</p>
+                <p>Nội dung: <b id="ckCode" style="background:yellow;">FF5K</b></p>
+            </div>
+            <button class="btn-fire" style="margin-top:10px;" onclick="verify()">XÁC NHẬN CHUYỂN KHOẢN</button>
+        </div>
+    </div>
+
+    <!-- QC CUỐI -->
+    <div class="ads-banner" style="border-color: var(--fire);" onclick="handleAdClick('bottom', 'https://shopee.vn')">
+        <span style="color:white">🧤 MUA BAO TAY SỢI BẠC CAO CẤP</span>
+        <span style="font-size: 11px; opacity: 0.6;">(Click để hoàn thành nhiệm vụ)</span>
+    </div>
+
+    <div class="footer-banner">
+        <p>Mọi thông tin trên là dựa trên sự tích lũy và học hỏi của mình, mong mọi người góp ý thêm nếu có lỗi và bug. <br> <b style="color:var(--fire-glow)">Chúc mọi người chơi game vui vẻ!</b></p>
+    </div>
+
+</div>
+
+<script>
+const phoneDb = {
+    "ip68": {s:[100,100,100,100,60,100], type:"ios", dpi:"Mặc định"},
+    "ipX": {s:[95,100,100,95,50,100], type:"ios", dpi:"Mặc định"},
+    "ip1113": {s:[98,92,90,85,45,95], type:"ios", dpi:"Mặc định"},
+    "ip1416": {s:[100,95,92,90,50,100], type:"ios", dpi:"Mặc định"},
+    "ipad": {s:[100,90,85,85,40,100], type:"ios", dpi:"Mặc định"},
+    "ssS24": {s:[100,100,100,95,55,100], type:"android", dpi:"611"},
+    "ssS21": {s:[98,100,95,90,50,95], type:"android", dpi:"510"},
+    "ssA": {s:[95,100,100,90,45,90], type:"android", dpi:"480"},
+    "mi14": {s:[100,100,100,92,55,100], type:"android", dpi:"640"},
+    "poco": {s:[98,100,100,100,60,100], type:"android", dpi:"720"},
+    "redmi": {s:[95,100,95,90,45,95], type:"android", dpi:"540"},
+    "rog": {s:[100,100,100,100,65,100], type:"android", dpi:"800"},
+    "redmagic": {s:[100,100,100,100,60,100], type:"android", dpi:"780"},
+    "oppo": {s:[96,100,100,95,50,95], type:"android", dpi:"560"},
+    "realme": {s:[98,100,95,90,45,100], type:"android", dpi:"600"},
+    "vivo": {s:[95,100,100,92,50,90], type:"android", dpi:"580"}
+};
+
+// CANVAS BACKGROUND
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.onresize = initCanvas; initCanvas();
+class Particle {
+    constructor() { this.x = Math.random() * canvas.width; this.y = canvas.height + 10; this.size = Math.random() * 2; this.speedY = Math.random() * 0.8 + 0.2; this.opacity = Math.random() * 0.4; }
+    update() { this.y -= this.speedY; if (this.y < -10) this.y = canvas.height + 10; }
+    draw() { ctx.fillStyle = `rgba(255, 77, 0, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+}
+for(let i=0; i<50; i++) particles.push(new Particle());
+function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+animate();
+
+// GAME LOGIC
+let score = 0, total = 0, hs = 0, isFiring = false, startY = 0;
+const field = document.getElementById("trainingField");
+const ch = document.getElementById("crosshair");
+const bot = document.getElementById("bot");
+const fireBtn = document.getElementById("fireBtn");
+
+field.onmousemove = e => {
+    let r = field.getBoundingClientRect();
+    ch.style.left = (e.clientX - r.left) + "px";
+    ch.style.top = (e.clientY - r.top) + "px";
+};
+
+fireBtn.onmousedown = e => { isFiring = true; startY = e.clientY; };
+window.onmouseup = e => {
+    if(isFiring) {
+        let drag = startY - e.clientY;
+        checkHit(drag);
+        isFiring = false;
+    }
+};
+
+function checkHit(drag) {
+    total++;
+    let rBot = bot.getBoundingClientRect();
+    let rCh = ch.getBoundingClientRect();
+    if(rCh.left > rBot.left && rCh.left < rBot.right && rCh.top > rBot.top && rCh.top < rBot.bottom) {
+        if(drag > 65) { 
+            score += 50; hs++; addKill("HEADSHOT"); 
+            field.classList.add("shake"); setTimeout(() => field.classList.remove("shake"), 100);
+        }
+        else { score += 20; addKill("BODY SHOT"); }
+        respawn();
+    }
+    document.getElementById("score").innerText = score;
+}
+
+function addKill(t) {
+    const f = document.getElementById("killFeed");
+    const i = document.createElement("div"); i.className = "kill-item"; i.innerText = t;
+    f.appendChild(i); setTimeout(() => i.remove(), 1500);
+}
+
+function respawn() {
+    bot.style.left = (Math.random()*70 + 10) + "%";
+    bot.style.top = (Math.random()*30 + 20) + "%";
+}
+
+function startGame() {
+    document.getElementById("startCover").style.display = "none";
+    score = 0; total = 0; hs = 0;
+    respawn();
+    let time = 30;
+    const bar = document.getElementById("timerBar");
+    let timer = setInterval(() => {
+        time--; bar.style.width = (time/30*100) + "%";
+        if(time <= 0) { clearInterval(timer); showReport(); }
+    }, 1000);
+}
+
+function showReport() {
+    document.getElementById("aiReport").style.display = "flex";
+    let rate = total ? Math.floor(hs/total*100) : 0;
+    document.getElementById("ai-hs").innerText = rate + "%";
+    
+    const reviewText = document.getElementById("ai-review-text");
+    const adjDiv = document.getElementById("ai-adjustment");
+    const adjText = document.getElementById("adj-text");
+    adjDiv.style.display = "block";
+    
+    if(rate < 40) {
+        reviewText.innerHTML = "AI Nhận xét: <b>Lực kéo tâm quá yếu.</b>";
+        adjText.innerText = "Tăng DPI thêm 60 đơn vị và tập vuốt dứt khoát.";
+    } else if(rate < 70) {
+        reviewText.innerHTML = "AI Nhận xét: <b>Kỹ năng ổn định.</b>";
+        adjText.innerText = "Giảm độ nhạy Red Dot xuống 4 đơn vị để ghim chặt.";
+    } else {
+        reviewText.innerHTML = "AI Nhận xét: <b>Trình độ Pro!</b>";
+        adjText.innerText = "Giữ nguyên cấu hình, tập trung vào phản xạ.";
+    }
+}
+
+function restartGame() { document.getElementById("aiReport").style.display = "none"; startGame(); }
+
+// ADS & UNLOCK
+let ads = { top: false, mid: false, bottom: false };
+function handleAdClick(p, l) { window.open(l, '_blank'); ads[p] = true; checkAds(); }
+function checkAds() {
+    const s = document.getElementById("ad-status");
+    let count = Object.values(ads).filter(v => v).length;
+    if(count >= 2) { s.innerHTML = "✅ NHIỆM VỤ HOÀN TẤT!"; setTimeout(unlock, 1000); }
+    else { s.innerHTML = `Nhiệm vụ: Cần click thêm ${2-count} quảng cáo nữa.`; }
+}
+function unlock() {
+    document.getElementById("vip-lock").style.display = "none";
+    document.getElementById("payArea").style.display = "none";
+    document.getElementById("vip-content").style.display = "block";
+    updateAll();
+}
+
+function updateAll() {
+    const v = document.getElementById("phoneSelect").value;
+    const data = phoneDb[v];
+    const lb = ["Nhìn quanh", "Red Dot", "2x Scope", "4x Scope", "Sniper", "Nhìn"];
+    let h = "";
+    for(let i=0; i<6; i++) h += `<div class="sens-card"><span>${lb[i]}</span><b>${data.s[i]}</b></div>`;
+    document.getElementById("sensDisplay").innerHTML = h;
+
+    if(document.getElementById("vip-content").style.display === "block") {
+        document.getElementById("vip-title-name").innerText = "CẤU HÌNH VIP: " + v.toUpperCase();
+        if(data.type === "android") {
+            document.getElementById("android-vip-box").style.display = "block";
+            document.getElementById("ios-vip-box").style.display = "none";
+            document.getElementById("vip-dpi-val").innerText = data.dpi;
+        } else {
+            document.getElementById("android-vip-box").style.display = "none";
+            document.getElementById("ios-vip-box").style.display = "block";
+        }
+    }
+}
+function showBank() { document.getElementById("payArea").style.display = "block"; }
+function verify() { alert("Hệ thống đang quét giao dịch..."); setTimeout(unlock, 3000); }
+
+updateAll();
+</script>
+</body>
+</html>
